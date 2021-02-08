@@ -16,6 +16,7 @@
     "dev": "npm-run-all build start"
   },
   "dependencies": {
+    "basic-ftp": "^4.6.3",
     "got": "^11.8.1"
   }
 }

@@ -1,10 +1,8 @@
-import got from 'got'
-
-import { BASE_URL } from './constants'
+import { getData } from './yfinance'
 
 export async function getTicker(ticker) {
-  const response = await got(`${BASE_URL}/${ticker}`)
-  console.log(response.body)
+  const tickerData = await getData(ticker)
+  return tickerData
 }
 
 export default {

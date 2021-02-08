@@ -60,6 +60,11 @@ balanced-match@^1.0.0:
   resolved "https://registry.yarnpkg.com/balanced-match/-/balanced-match-1.0.0.tgz#89b4d199ab2bee49de164ea02b89ce462d71b767"
   integrity sha1-ibTRmasr7kneFk6gK4nORi1xt2c=
 
+basic-ftp@^4.6.3:
+  version "4.6.3"
+  resolved "https://registry.yarnpkg.com/basic-ftp/-/basic-ftp-4.6.3.tgz#a09dfe0e21fede82f8c2d70ca83f67d0096bf7a1"
+  integrity sha512-u/zMus8UacMmsxko3szgmuMYaf7pvYV/k/rMJb1I9RCByURWaVP7/jii/8cvPWF3Co7qqBgwRMhyI5vg727OhA==
+
 brace-expansion@^1.1.7:
   version "1.1.11"
   resolved "https://registry.yarnpkg.com/brace-expansion/-/brace-expansion-1.1.11.tgz#3c7fcbf529d87226f3d2f52b966ff5271eb441dd"
