@@ -1,28 +1,22 @@
 import ftp from 'basic-ftp'
+import got from 'got'
 
-import { NASDAQ_URL } from './constants'
+import { NASDAQ_URL, SP500_URL } from './constants'
+
 import DataStream from './utils/DataStream'
-
-function transformRawNasdaqData(data) {
-  return data
-    .join('')
-    .split('\r\n')
-    .filter((stock) => !stock.includes(' test '))
-    .map((stock) => {
-      const [ticker, name] = stock.split('|')
-      return { ticker, name }
-    })
-}
+import { parseSP500Data, parseNasdaqData } from './utils/data'
 
 export async function nasdaq() {
   const nasdaqData = {}
 
   const client = new ftp.Client()
 
+  // Create DataStream to load the FTP files into
   const rawNasdaqListedData = new DataStream()
   const rawNasdaqOtherData = new DataStream()
 
   try {
+    // Login to the Nasdaq FTP
     await client.access({
       host: NASDAQ_URL,
     })
@@ -33,12 +27,8 @@ export async function nasdaq() {
     await client.downloadTo(rawNasdaqOtherData, 'otherlisted.txt')
 
     // Parse both datasets retrieved from Nasdaq FTP
-    const parsedNasdaqListedData = transformRawNasdaqData(
-      rawNasdaqListedData.chunks
-    )
-    const parsedNasdaqOtherData = transformRawNasdaqData(
-      rawNasdaqOtherData.chunks
-    )
+    const parsedNasdaqListedData = parseNasdaqData(rawNasdaqListedData.chunks)
+    const parsedNasdaqOtherData = parseNasdaqData(rawNasdaqOtherData.chunks)
 
     // Merge both datasets, making sure we have no duplicates
     for (const company of parsedNasdaqListedData) {
@@ -57,6 +47,14 @@ export async function nasdaq() {
   return Object.values(nasdaqData)
 }
 
+export async function sp500() {
+  // Get S&P 500 data from Wikipedia
+  const response = await got(SP500_URL)
+  // Turn the HTML table into JSON
+  return parseSP500Data(response.body)
+}
+
 export default {
   nasdaq,
+  sp500,
 }
