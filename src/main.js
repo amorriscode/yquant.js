@@ -1,7 +1,5 @@
 import ticker from './ticker'
-import market, { sp500 } from './market'
-
-sp500()
+import market from './market'
 
 export default {
   ...ticker,
