@@ -13,16 +13,13 @@ function getTableText(child) {
 export function parseSP500Data(html) {
   const htmlTree = parse(html)
 
-  const tableHeaders = htmlTree
-    .querySelector('table')
-    .querySelectorAll('th')
-    .map((th) => th.childNodes.map(getTableText).join(' ').trim())
+  const table = htmlTree.querySelector('table').querySelectorAll('tr')
 
-  return htmlTree
-    .querySelector('table')
-    .querySelectorAll('tr')
+  const tableHeaders = table[0].childNodes.map(getTableText).filter(Boolean)
+
+  return table
+    .slice(1)
     .map((tr) => tr.childNodes.map(getTableText).filter(Boolean))
-    .splice(1)
     .map((company) => {
       const data = {}
 
@@ -306,4 +303,69 @@ export function parseYahooFinanceStats(html) {
   }
 
   return stats
+}
+
+export function parseYahooFinanceIncomeStatement(metrics, period, data) {
+  const parsedData = JSON.parse(data).timeseries.result
+
+  const nonTrailingData = parsedData.filter(
+    (data) => !data.meta.type[0].includes('trailing')
+  )
+
+  const trailingData = parsedData.filter((data) =>
+    data.meta.type[0].includes('trailing')
+  )
+
+  const incomeStatement = {}
+
+  // Get headers from a sample of the data
+  const sampleData = nonTrailingData[0]
+  const headers = sampleData[sampleData.meta.type[0]].map(
+    (data) => data.asOfDate
+  )
+
+  for (const metric of metrics) {
+    const key = camelize(metric.split(/(?=[A-Z])/).join(' '))
+    incomeStatement[key] = { ttm: '-' }
+
+    for (const header of headers) {
+      incomeStatement[key][header] = '-'
+    }
+  }
+
+  for (const metric of nonTrailingData) {
+    const metricType = metric.meta.type[0]
+
+    const key = camelize(
+      metricType
+        .replace(period, '')
+        .split(/(?=[A-Z])/)
+        .join(' ')
+    )
+
+    if (metric[metricType]) {
+      metric[metricType].forEach((data) => {
+        incomeStatement[key][data.asOfDate] = data.reportedValue.raw
+      })
+    }
+  }
+
+  for (const metric of trailingData) {
+    const metricType = metric.meta.type[0]
+
+    const key = camelize(
+      metricType
+        .replace('trailing', '')
+        .split(/(?=[A-Z])/)
+        .join(' ')
+    )
+
+    if (metric[metricType]) {
+      metric[metricType].forEach((data) => {
+        incomeStatement[key].ttm = data.reportedValue.raw
+      })
+    }
+  }
+
+  return incomeStatement
 }
