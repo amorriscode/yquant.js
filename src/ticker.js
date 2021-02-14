@@ -1,7 +1,7 @@
-import { getData } from './yfinance'
+import { getChartData } from './yfinance'
 
 export async function getTicker(ticker) {
-  const tickerData = await getData(ticker)
+  const tickerData = await getChartData(ticker)
   return tickerData
 }
 
