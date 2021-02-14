@@ -1,6 +1,8 @@
 export const YAHOO_FINANCE_CHART_URL =
   'https://query1.finance.yahoo.com/v8/finance/chart/'
 
+export const YAHOO_FINANCE_QUOTE_URL = 'https://finance.yahoo.com/quote'
+
 export const NASDAQ_URL = 'ftp.nasdaqtrader.com'
 
 export const SP500_URL =
