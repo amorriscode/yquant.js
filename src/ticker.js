@@ -32,7 +32,6 @@ export async function getStats(ticker) {
 
 export default {
   getChartData,
-  getTicker,
   getSummary,
   getStats,
 }
