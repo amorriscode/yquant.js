@@ -9,6 +9,7 @@ import {
   parseYahooFinanceSummary,
   parseYahooFinanceStats,
   parseYahooFinanceFinancials,
+  parseYahooFinanceAnalysis,
 } from './utils/data'
 
 export async function chartData(
@@ -142,6 +143,13 @@ export async function cashFlow(ticker, period = 'annual') {
   return parseYahooFinanceFinancials(metrics, period, response.body)
 }
 
+export async function analysis(ticker) {
+  const response = await got(
+    `${YAHOO_FINANCE_QUOTE_URL}/${ticker}/analysis?p=${ticker}`
+  )
+  return parseYahooFinanceAnalysis(ticker, response.body)
+}
+
 export default {
   chartData,
   summary,
@@ -149,4 +157,5 @@ export default {
   incomeStatement,
   balanceSheet,
   cashFlow,
+  analysis,
 }
