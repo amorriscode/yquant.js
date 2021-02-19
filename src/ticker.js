@@ -8,7 +8,7 @@ import {
 import {
   parseYahooFinanceSummary,
   parseYahooFinanceStats,
-  parseYahooFinanceIncomeStatement,
+  parseYahooFinanceFinancials,
 } from './utils/data'
 
 export async function chartData(
@@ -41,7 +41,7 @@ export async function statistics(ticker) {
 }
 
 export async function incomeStatement(ticker, period = 'annual') {
-  const metric = [
+  const metrics = [
     'TotalRevenue',
     'CostOfRevenue',
     'GrossProfit',
@@ -72,7 +72,7 @@ export async function incomeStatement(ticker, period = 'annual') {
 
   const response = await got(`${YAHOO_TIMESERIES_URL}/${ticker}`, {
     searchParams: {
-      type: metric.map((type) => `${period}${type},trailing${type}`).join(','),
+      type: metrics.map((type) => `${period}${type},trailing${type}`).join(','),
       period1: '493590046',
       period2: `${new Date().getTime()}`.slice(0, 10),
       merge: 'false',
@@ -80,7 +80,66 @@ export async function incomeStatement(ticker, period = 'annual') {
     },
   })
 
-  return parseYahooFinanceIncomeStatement(metric, period, response.body)
+  return parseYahooFinanceFinancials(metrics, period, response.body)
+}
+
+export async function balanceSheet(ticker, period = 'annual') {
+  const metrics = [
+    'TotalAssets',
+    'TotalLiabilitiesNetMinorityInterest',
+    'TotalEquityGrossMinorityInterest',
+    'TotalCapitalization',
+    'CommonStockEquity',
+    'NetTangibleAssets',
+    'WorkingCapital',
+    'InvestedCapital',
+    'TangibleBookValue',
+    'TotalDebt',
+    'NetDebt',
+    'ShareIssued',
+    'OrdinarySharesNumber',
+  ]
+
+  const response = await got(`${YAHOO_TIMESERIES_URL}/${ticker}`, {
+    searchParams: {
+      type: metrics.map((type) => `${period}${type},trailing${type}`).join(','),
+      period1: '493590046',
+      period2: `${new Date().getTime()}`.slice(0, 10),
+      merge: 'false',
+      padTimeSeries: 'true',
+    },
+  })
+
+  return parseYahooFinanceFinancials(metrics, period, response.body)
+}
+
+export async function cashFlow(ticker, period = 'annual') {
+  const metrics = [
+    'OperatingCashFlow',
+    'InvestingCashFlow',
+    'FinancingCashFlow',
+    'EndCashPosition',
+    'IncomeTaxPaidSupplementalData',
+    'InterestPaidSupplementalData',
+    'CapitalExpenditure',
+    'IssuanceOfCapitalStock',
+    'IssuanceOfDebt',
+    'RepaymentOfDebt',
+    'RepurchaseOfCapitalStock',
+    'FreeCashFlow',
+  ]
+
+  const response = await got(`${YAHOO_TIMESERIES_URL}/${ticker}`, {
+    searchParams: {
+      type: metrics.map((type) => `${period}${type},trailing${type}`).join(','),
+      period1: '493590046',
+      period2: `${new Date().getTime()}`.slice(0, 10),
+      merge: 'false',
+      padTimeSeries: 'true',
+    },
+  })
+
+  return parseYahooFinanceFinancials(metrics, period, response.body)
 }
 
 export default {
@@ -88,4 +147,6 @@ export default {
   summary,
   statistics,
   incomeStatement,
+  balanceSheet,
+  cashFlow,
 }

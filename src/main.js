@@ -2,7 +2,7 @@ import ticker from './ticker'
 import market from './market'
 
 async function ok() {
-  await ticker.incomeStatement('aapl')
+  console.log(await ticker.cashFlow('aapl'))
 }
 
 ok()
