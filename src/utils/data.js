@@ -369,3 +369,70 @@ export function parseYahooFinanceFinancials(metrics, period, data) {
 
   return incomeStatement
 }
+
+export function parseYahooFinanceAnalysis(ticker, html) {
+  const htmlTree = parse(html)
+
+  const analysis = {
+    earningsEstimate: [],
+    revenueEstimate: [],
+    earningsHistory: [],
+    epsTrend: [],
+    epsRevisions: [],
+    growthEstimates: [],
+  }
+
+  htmlTree.querySelectorAll('table').forEach((table) => {
+    const tableHeaders = table
+      .querySelectorAll('th')
+      .map(getTableText)
+      .filter(Boolean)
+
+    const tableName = camelize(tableHeaders[0])
+
+    table
+      .querySelectorAll('tr')
+      .slice(1)
+      .forEach((row) => {
+        const rowData = row
+          .querySelectorAll('td')
+          .map(getTableText)
+          .filter(Boolean)
+
+        const data = {}
+
+        for (let [index, header] of tableHeaders.entries()) {
+          header = header
+            .replace(/ \([^)]*\)/g, '')
+            .replace(/\(s\)/g, '')
+            .replace(/Qtr./g, 'Quarter')
+
+          switch (header) {
+            case 'S&amp;P 500':
+              header = 'sp500'
+              break
+            case ticker.toUpperCase():
+              header = 'ticker'
+              break
+            default:
+              // Camelize if we don't come across a date
+              if (!/[0-9]\/[0-9][0-9]\/[0-9][0-9][0-9][0-9]/.test(header)) {
+                header = camelize(header)
+              }
+          }
+
+          if (header === tableName) {
+            header = 'rowName'
+          }
+          // console.log(header)
+          data[header] = rowData[index]
+        }
+
+        if (analysis[tableName]) {
+          analysis[tableName].push(data)
+        }
+      })
+  })
+
+  return analysis
+}
