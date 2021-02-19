@@ -305,7 +305,7 @@ export function parseYahooFinanceStats(html) {
   return stats
 }
 
-export function parseYahooFinanceIncomeStatement(metrics, period, data) {
+export function parseYahooFinanceFinancials(metrics, period, data) {
   const parsedData = JSON.parse(data).timeseries.result
 
   const nonTrailingData = parsedData.filter(
